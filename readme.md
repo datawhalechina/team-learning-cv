@@ -6,7 +6,7 @@
 主要包括：
 
 - [计算机视觉基础：图像处理]()
-- [计算机视觉实践（街景字符编码识别）]()
+- [计算机视觉实践（街景字符编码识别）](https://github.com/datawhalechina/team-learning-cv/tree/master/CharacterCodingRecognition)
 
 
 
