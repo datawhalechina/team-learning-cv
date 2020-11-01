@@ -1,4 +1,4 @@
-# Datawhale 计算机视觉基础-图像处理（下）-Task03 Haar特征描述算子-人脸检测
+﻿# 09 Haar特征描述算子-人脸检测
 
 ## 3.1简介
 Haar-like特征最早是由Papageorgiou等应用于人脸表示，在2001年，Viola和Jones两位大牛发表了经典的《Rapid Object Detection using a Boosted Cascade of Simple Features》和《Robust Real-Time Face Detection》，在AdaBoost算法的基础上，使用Haar-like小波特征和积分图方法进行人脸检测，他俩不是最早使用提出小波特征的，但是他们设计了针对人脸检测更有效的特征，并对AdaBoost训练出的强分类器进行级联。这可以说是人脸检测史上里程碑式的一笔了，也因此当时提出的这个算法被称为Viola-Jones检测器。又过了一段时间，Rainer Lienhart和Jochen Maydt两位大牛将这个检测器进行了扩展，最终形成了OpenCV现在的Haar分类器。
