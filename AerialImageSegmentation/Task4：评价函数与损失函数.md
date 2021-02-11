@@ -1,12 +1,14 @@
-# Task4：评价函数与损失函数（3天）
+# 零基础入门语义分割-Task4 评价函数与损失函数
 
-学习主题：语义分割模型各种评价函数与损失函数
+本章主要介绍语义分割的评价函数和各类损失函数。
 
-学习内容：Dice、IoU、BCE、Focal Loss、Lovász-Softmax
+## 4 评价函数与损失函数
 
-学习成果：评价/损失函数的实践
+### 4.1 学习目标
+- 掌握常见的评价函数和损失函数Dice、IoU、BCE、Focal Loss、Lovász-Softmax；
+- 掌握评价/损失函数的实践；
 
-## TP TN FP FN
+### 4.2 TP TN FP FN
 
 在讲解语义分割中常用的评价函数和损失函数之前，先补充一**TP(真正例 true positive) TN(真反例 true negative) FP(假正例 false positive) FN(假反例 false negative)**的知识。在分类问题中，我们经常看到上述的表述方式，以二分类为例，我们可以将所有的样本预测结果分成TP、TN、 FP、FN四类，并且每一类含有的样本数量之和为总样本数量，即TP+FP+FN+TN=总样本数量。其混淆矩阵如下：
 
@@ -14,13 +16,13 @@
 
 上述的概念都是通过以预测结果的视角定义的，可以依据下面方式理解：
 
-预测结果中的正例 → 在实际中是正例 → 的所有样本被称为真正例（TP）<预测正确>
+- 预测结果中的正例 → 在实际中是正例 → 的所有样本被称为真正例（TP）<预测正确>
 
-预测结果中的正例 → 在实际中是反例 → 的所有样本被称为假正例（FP）<预测错误>
+- 预测结果中的正例 → 在实际中是反例 → 的所有样本被称为假正例（FP）<预测错误>
 
-预测结果中的反例 → 在实际中是正例 → 的所有样本被称为假反例（FN）<预测错误>
+- 预测结果中的反例 → 在实际中是正例 → 的所有样本被称为假反例（FN）<预测错误>
 
-预测结果中的反例 → 在实际中是反例 → 的所有样本被称为真反例（TN）<预测正确>
+- 预测结果中的反例 → 在实际中是反例 → 的所有样本被称为真反例（TN）<预测正确>
 
 这里就不得不提及精确率（precision）和召回率（recall）：
 $$
@@ -35,15 +37,15 @@ $Precision$代表了预测的正例中真正的正例所占比例；$Recall$代�
 
 以上面的图片为例，图中左子图中的人物区域（黄色像素集合）是我们**真实标注的前景信息（target）**，其他区域（紫色像素集合）为背景信息。当经过预测之后，我们会得到的一张预测结果，图中右子图中的黄色像素为**预测的前景（prediction）**，紫色像素为预测的背景区域。此时，我们便能够将预测结果分成4个部分：
 
-预测结果中的黄色无线区域 → 真实的前景 → 的所有像素集合被称为真正例（TP）<预测正确>
+- 预测结果中的黄色无线区域 → 真实的前景 → 的所有像素集合被称为真正例（TP）<预测正确>
 
-预测结果中的蓝色斜线区域 → 真实的背景 → 的所有像素集合被称为假正例（FP）<预测错误>
+- 预测结果中的蓝色斜线区域 → 真实的背景 → 的所有像素集合被称为假正例（FP）<预测错误>
 
-预测结果中的红色斜线区域 → 真实的前景 → 的所有像素集合被称为假反例（FN）<预测错误>
+- 预测结果中的红色斜线区域 → 真实的前景 → 的所有像素集合被称为假反例（FN）<预测错误>
 
-预测结果中的白色斜线区域 → 真实的背景 → 的所有像素集合被称为真反例（TN）<预测正确>
+- 预测结果中的白色斜线区域 → 真实的背景 → 的所有像素集合被称为真反例（TN）<预测正确>
 
-## Dice评价指标
+### 4.3 Dice评价指标
 
 **Dice系数**
 
@@ -53,10 +55,12 @@ $$
 Dice (T, P) = \frac{2 |T \cap P|}{|T| \cup |P|} = \frac{2TP}{FP+2TP+FN}
 $$
 式中：$T$表示真实前景（target），$P$表示预测前景（prediction）。Dice系数取值范围为$[0,1]$，其中值为1时代表预测与真实完全一致。仔细观察，Dice系数与分类评价指标中的F1 score很相似：
+
 $$
 \frac{1}{F1} = \frac{1}{Precision} + \frac{1}{Recall} \\
 F1 = \frac{2TP}{FP+2TP+FN}
 $$
+
 所以，Dice系数不仅在直观上体现了target与prediction的相似程度，同时其本质上还隐含了精确率和召回率两个重要指标。
 
 计算Dice时，将$|T \cap P|$近似为prediction与target对应元素相乘再相加的结果。$|T|$ 和$|P|$的计算直接进行简单的元素求和（也有一些做法是取平方求和），如下示例：
@@ -112,6 +116,7 @@ $$
 $$
 L = 1-\frac{2 |T \cap P| + 1}{|T| \cup |P|+1}
 $$
+
 **代码实现**
 
 ```python
@@ -138,7 +143,7 @@ output = array([[1, 0, 1],
 d = 0.5714286326530524
 ```
 
-## IoU评价指标
+### 4.4 IoU评价指标
 
 IoU（intersection over union）指标就是常说的交并比，不仅在语义分割评价中经常被使用，在目标检测中也是常用的评价指标。顾名思义，交并比就是指target与prediction两者之间交集与并集的比值：
 $$
@@ -176,7 +181,7 @@ output = array([[1, 0, 1],
 d = 0.4
 ```
 
-## BCE损失函数
+### 4.5 BCE损失函数
 
 BCE损失函数（Binary Cross-Entropy Loss）是交叉熵损失函数（Cross-Entropy Loss）的一种特例，BCE Loss只应用在二分类任务中。针对分类问题，单样本的交叉熵损失为：
 $$
@@ -242,7 +247,7 @@ print(loss_bce_sig)
 tensor(0.4869, grad_fn=<BinaryCrossEntropyWithLogitsBackward>)
 ```
 
-## Focal Loss
+### 4.6 Focal Loss
 
 Focal loss最初是出现在目标检测领域，主要是为了解决正负样本比例失调的问题。那么对于分割任务来说，如果存在数据不均衡的情况，也可以借用focal loss来进行缓解。Focal loss函数公式如下所示：
 
@@ -333,7 +338,7 @@ print('f_loss_2', f_loss_2)
 f_loss_2 tensor(0.3375, grad_fn=<MeanBackward0>)
 ```
 
-## Lovász-Softmax
+### 4.7 Lovász-Softmax
 
 IoU是评价分割模型分割结果质量的重要指标，因此很自然想到能否用$1-IoU$（即Jaccard loss）来做损失函数，但是它是一个离散的loss，不能直接求导，所以无法直接用来作为损失函数。为了克服这个离散的问题，可以采用lLovász extension将离散的Jaccard loss 变得连续，从而可以直接求导，使得其作为分割网络的loss function。Lovász-Softmax相比于交叉熵函数具有更好的效果。
 
@@ -384,6 +389,7 @@ $$
 $$
 loss(\pmb{p})=\frac{1}{|C|}\sum_{c\in C}\overline{\Delta_{J_c}}(m(c))
 $$
+
 **代码实现**
 
 论文作者已经给出了Lovász-Softmax实现代码，并且有pytorch和tensorflow两种版本，并提供了使用demo。此处将针对多分类任务的Lovász-Softmax源码进行展示。
@@ -500,7 +506,7 @@ def mean(l, ignore_nan=False, empty=0):
     return acc / n
 ```
 
-## 参考
+### 4.8 参考链接
 
 [语义分割的评价指标IoU](https://blog.csdn.net/lingzhou33/article/details/87901365)
 
@@ -511,3 +517,12 @@ def mean(l, ignore_nan=False, empty=0):
 [pytorch loss-functions](https://pytorch.org/docs/stable/nn.html#loss-functions)
 
 [Submodularity and the Lovász extension](https://sudeepraja.github.io/Submodular/)
+
+### 4.9 本章小结
+
+本章对各类评价指标进行介绍，并进行具体代码实践。
+
+### 4.10 课后作业
+
+- 理解各类评价函数的原理；
+- 对比各类损失函数原理，并进行具体实践；
