@@ -162,7 +162,7 @@ $$
 ```python
 def iou_score(output, target):
     '''计算IoU指标'''
-	intersection = np.logical_and(target, output) 
+	  intersection = np.logical_and(target, output) 
     union = np.logical_or(target, output) 
     return np.sum(intersection) / np.sum(union)
 
