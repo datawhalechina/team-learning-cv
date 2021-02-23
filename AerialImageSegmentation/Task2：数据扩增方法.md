@@ -69,10 +69,10 @@ plt.imshow(cv2.flip(mask, 0))
 # 水平翻转
 plt.figure(figsize=(16, 8))
 plt.subplot(1, 2, 1)
-plt.imshow(cv2.flip(img, 0))
+plt.imshow(cv2.flip(img, 1))
 
 plt.subplot(1, 2, 2)
-plt.imshow(cv2.flip(mask, 0))
+plt.imshow(cv2.flip(mask, 1))
 ```
 ![](img/aug-3.png)
 
